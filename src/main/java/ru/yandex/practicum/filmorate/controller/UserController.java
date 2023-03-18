@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.time.LocalDate;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +15,7 @@ import java.util.List;
 public class UserController {
     private final static Logger log = LoggerFactory.getLogger(UserController.class);
     private static int idCounter = 1;
-    List<User> users = new ArrayList<>();
+    private static List<User> users = new ArrayList<>();
 
     @GetMapping
     public List<User> getUsers() {
@@ -23,22 +23,8 @@ public class UserController {
     }
 
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        if(user.getEmail().isEmpty()) {
-            throw new ValidationException("Электронная почта не может быть пустой");
-        }
-        if(!user.getEmail().contains("@")) {
-            throw new ValidationException("Электронная почта должна содержать @");
-        }
-        if(user.getLogin().isEmpty() || user.getLogin().contains(" ")) {
-            throw new ValidationException("Логин не должен быть пустым или содержать пробелы");
-        }
-        if(user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Дата рождения не может быть в будущем");
-        }
-        if( user.getName() == null || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-        }
+    public User createUser(@Valid @RequestBody User user) {
+        validate(user);
         user.setId(idCounter);
         users.add(user);
         idCounter++;
@@ -47,22 +33,8 @@ public class UserController {
     }
 
     @PutMapping
-    public User updateUser(@RequestBody User user) {
-        if(user.getEmail().isEmpty()) {
-            throw new ValidationException("Электронная почта не может быть пустой");
-        }
-        if(!user.getEmail().contains("@")) {
-            throw new ValidationException("Электронная почта должна содержать @");
-        }
-        if(user.getLogin().isEmpty() || user.getLogin().contains(" ")) {
-            throw new ValidationException("Логин не должен быть пустым или содержать пробелы");
-        }
-        if(user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Дата рождения не может быть в будущем");
-        }
-        if(user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
+    public User updateUser(@Valid @RequestBody User user) {
+        validate(user);
         if (users.size() >= user.getId()) {
             users.set(user.getId() - 1, user);
             log.info("Пользователь обновлен успешно");
@@ -70,6 +42,14 @@ public class UserController {
         } else {
             throw new ValidationException("Пользователя с таким id не существует");
         }
+    }
 
+    private void validate(User user) {
+        if(user.getLogin().contains(" ")) {
+            throw new ValidationException("Логин не должен содержать пробелы");
+        }
+        if( user.getName() == null || user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+        }
     }
 }
