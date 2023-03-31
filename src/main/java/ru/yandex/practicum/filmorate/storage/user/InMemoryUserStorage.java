@@ -12,10 +12,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class InMemoryUserStorage implements UserStorage{
-    private final static Logger log = LoggerFactory.getLogger(UserController.class);
+public class InMemoryUserStorage implements UserStorage {
+    private final Logger log = LoggerFactory.getLogger(UserController.class);
     private static int idCounter = 1;
     private static List<User> users = new ArrayList<>();
+
     public List<User> getUsers() {
         return users;
     }
@@ -49,10 +50,10 @@ public class InMemoryUserStorage implements UserStorage{
     }
 
     private void validate(User user) {
-        if(user.getLogin().contains(" ")) {
+        if (user.getLogin().contains(" ")) {
             throw new ValidationException("Логин не должен содержать пробелы");
         }
-        if( user.getName() == null || user.getName().isEmpty()) {
+        if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
     }

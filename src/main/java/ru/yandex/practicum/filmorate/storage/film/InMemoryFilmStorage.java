@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class InMemoryFilmStorage implements FilmStorage{
-    private final static Logger log = LoggerFactory.getLogger(FilmController.class);
+public class InMemoryFilmStorage implements FilmStorage {
+    private final Logger log = LoggerFactory.getLogger(FilmController.class);
     private static int idCounter = 1;
     private static List<Film> films = new ArrayList<>();
-    private final LocalDate MIN_RELEASE_DATE = LocalDate.of(1895, 12, 28);
+    private final LocalDate minReleaseDate = LocalDate.of(1895, 12, 28);
 
     public List<Film> getFilms() {
         return films;
@@ -52,7 +52,7 @@ public class InMemoryFilmStorage implements FilmStorage{
     }
 
     private void validate(Film film) {
-        if(film.getReleaseDate().isBefore(MIN_RELEASE_DATE)) {
+        if (film.getReleaseDate().isBefore(minReleaseDate)) {
             throw new ValidationException("Дата релиза фильма не может быть раньше 28.12.1895");
         }
     }

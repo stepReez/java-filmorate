@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
-    private final static Logger log = LoggerFactory.getLogger(FilmController.class);
+    private final Logger log = LoggerFactory.getLogger(FilmController.class);
     FilmStorage filmStorage;
 
     @Autowired
@@ -25,7 +25,7 @@ public class FilmService {
     }
 
     public void addLike(int filmId, int user) {
-        if(filmId < 0) {
+        if (filmId < 0) {
             throw new NotFoundException("Id фильма должно быть положительным");
         } else if (user < 0) {
             throw new NotFoundException("Id пользователя должно быть положительным");
@@ -36,7 +36,7 @@ public class FilmService {
     }
 
     public void removeLike(int filmId, int user) {
-        if(filmId < 0) {
+        if (filmId < 0) {
             throw new NotFoundException("Id фильма должно быть положительным");
         } else if (user < 0) {
             throw new NotFoundException("Id пользователя должно быть положительным");

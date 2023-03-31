@@ -15,16 +15,16 @@ import java.util.Set;
 
 @Service
 public class UserService {
-    private final static Logger log = LoggerFactory.getLogger(FilmController.class);
+    private final Logger log = LoggerFactory.getLogger(FilmController.class);
     UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage UserStorage) {
-        this.userStorage = UserStorage;
+    public UserService(UserStorage userStorage) {
+        this.userStorage = userStorage;
     }
 
     public void addFriend(int firstId, int secondId) {
-        if(firstId > 0 && secondId > 0) {
+        if (firstId > 0 && secondId > 0) {
             userStorage.findUser(firstId).addFriend(secondId);
             userStorage.findUser(secondId).addFriend(firstId);
             log.info("Юзеры " + firstId + " и " + secondId + " теперь друзья");
@@ -34,7 +34,7 @@ public class UserService {
     }
 
     public void removeFriend(int firstUser, int secondUser) {
-        if(firstUser > 0 && secondUser > 0) {
+        if (firstUser > 0 && secondUser > 0) {
             userStorage.findUser(firstUser).removeFriend(secondUser);
             userStorage.findUser(secondUser).removeFriend(firstUser);
             log.info("Юзеры " + firstUser + " и " + secondUser + " больше не друзья");
@@ -49,7 +49,7 @@ public class UserService {
         Set<Integer> setFriends = userStorage.findUser(secondUser).getFriends();
 
         for (Integer friend : userStorage.findUser(firstUser).getFriends()) {
-            if(setFriends.contains(friend)) {
+            if (setFriends.contains(friend)) {
                 mutualFriends.add(userStorage.findUser(friend));
             }
         }
