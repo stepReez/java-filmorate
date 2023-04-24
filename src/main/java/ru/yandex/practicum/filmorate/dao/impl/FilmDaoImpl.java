@@ -18,7 +18,7 @@ public class FilmDaoImpl implements FilmDao {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public FilmDaoImpl (JdbcTemplate jdbcTemplate) {
+    public FilmDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

@@ -15,7 +15,7 @@ import java.util.NoSuchElementException;
 
 @Component
 @Qualifier("userDbStorage")
-public class UserDbStorage implements UserStorage{
+public class UserDbStorage implements UserStorage {
     private final Logger log = LoggerFactory.getLogger(UserController.class);
 
     private final UserDao userDao;
