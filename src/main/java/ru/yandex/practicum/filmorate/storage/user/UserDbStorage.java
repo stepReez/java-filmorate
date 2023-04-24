@@ -2,66 +2,74 @@ package ru.yandex.practicum.filmorate.storage.user;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.UserController;
+import ru.yandex.practicum.filmorate.dao.UserDao;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Component
-public class InMemoryUserStorage implements UserStorage {
+@Qualifier("userDbStorage")
+public class UserDbStorage implements UserStorage{
     private final Logger log = LoggerFactory.getLogger(UserController.class);
+
+    private final UserDao userDao;
 
     private static int idCounter = 1;
 
-    private static List<User> users = new ArrayList<>();
-
-    public List<User> getUsers() {
-        return users;
+    public UserDbStorage(UserDao userDao) {
+        this.userDao = userDao;
     }
 
+    @Override
+    public List<User> getUsers() {
+        return userDao.findAllUsers().get();
+    }
+
+    @Override
     public User createUser(User user) {
         validate(user);
         user.setId(idCounter);
-        users.add(user);
         idCounter++;
-        log.info("Пользователь создан успешно");
-        return user;
+        return userDao.createUser(user).get();
     }
 
+    @Override
     public User updateUser(User user) {
         validate(user);
-        if (users.size() >= user.getId()) {
-            users.set((user.getId() - 1), user);
-            log.info("Пользователь обновлен успешно");
-            return user;
-        } else {
-            throw new NotFoundException("Пользователя с таким id не существует");
+        if (user.getId() > idCounter) {
+            throw new NotFoundException(String.format("Пользователя с id %d не существует", user.getId()));
         }
+        return userDao.updateUser(user).get();
     }
 
+    @Override
     public User findUser(int id) {
-        if (users.size() >= id) {
-            return users.get(id - 1);
-        } else {
-            throw new NotFoundException("Фильма с таким id не существует");
+        try {
+            return userDao.findUserById(id).get();
+        } catch (NoSuchElementException e) {
+               throw new NotFoundException(String.format("Пользователь с id=%d не найден", id));
         }
     }
 
     @Override
     public void addFriend(int userId, int friendId) {
-        findUser(userId).addFriend(friendId);
-        findUser(friendId).addFriend(userId);
-        log.info("Юзеры " + userId + " и " + userId + " теперь друзья");
+        if (userDao.confirmFriend(userId, friendId).get()) {
+            log.info("Юзеры " + userId + " и " + userId + " теперь друзья");
+        } else {
+            userDao.addFriend(userId, friendId);
+            log.info(String.format("Пользователь %d отправил заявку в друзья пользователю %d", userId, friendId));
+        }
     }
 
     @Override
     public void deleteFriend(int userId, int friendId) {
-        findUser(userId).removeFriend(friendId);
-        findUser(friendId).removeFriend(userId);
+        userDao.deleteFriend(userId, friendId);
         log.info("Юзеры " + userId + " и " + friendId + " больше не друзья");
     }
 
@@ -73,4 +81,5 @@ public class InMemoryUserStorage implements UserStorage {
             user.setName(user.getLogin());
         }
     }
+
 }
