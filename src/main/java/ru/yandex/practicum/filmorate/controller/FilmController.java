@@ -26,8 +26,8 @@ public class FilmController {
     }
 
     @GetMapping("/films")
-    public List<Film> getFilms() {
-        return filmStorage.getFilms();
+    public List<Film> getFilms(@RequestParam(defaultValue = "10") String count) {
+        return filmStorage.getFilms(count);
     }
 
     @PostMapping("/films")

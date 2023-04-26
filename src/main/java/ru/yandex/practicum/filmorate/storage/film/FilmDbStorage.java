@@ -26,8 +26,8 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getFilms() {
-        return filmDao.findAllFilms().get();
+    public List<Film> getFilms(String count) {
+        return filmDao.findAllFilms(count).get();
     }
 
     @Override

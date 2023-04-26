@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import java.util.List;
 
 public interface FilmStorage {
-    List<Film> getFilms();
+    List<Film> getFilms(String count);
 
     Film createFilm(Film film);
 

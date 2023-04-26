@@ -27,8 +27,8 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getUsers() {
-        return userDao.findAllUsers().get();
+    public List<User> getUsers(String count) {
+        return userDao.findAllUsers(count).get();
     }
 
     @Override

@@ -19,7 +19,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     private static List<User> users = new ArrayList<>();
 
-    public List<User> getUsers() {
+    public List<User> getUsers(String count) {
         return users;
     }
 

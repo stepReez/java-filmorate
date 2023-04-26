@@ -24,8 +24,8 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getUsers() {
-        return userStorage.getUsers();
+    public List<User> getUsers(@RequestParam(defaultValue = "10") String count) {
+        return userStorage.getUsers(count);
     }
 
     @PostMapping

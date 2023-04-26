@@ -1,7 +1,5 @@
-
-
 CREATE TABLE IF NOT EXISTS "rating" (
-  "rating_id" integer PRIMARY KEY,
+  "id" integer PRIMARY KEY,
   "rating_name" varchar(10)
 );
 
@@ -11,8 +9,8 @@ CREATE TABLE IF NOT EXISTS "films" (
   "description" varchar(200),
   "releaseDate" date,
   "duration" integer,
-  "rating" integer,
-  FOREIGN KEY ("rating") REFERENCES "rating" ("rating_id")
+  "rating_id" integer,
+  FOREIGN KEY ("rating_id") REFERENCES "rating" ("id")
 );
 
 CREATE TABLE IF NOT EXISTS "users" (

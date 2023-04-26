@@ -1,6 +1,6 @@
 MERGE INTO "rating"
-("rating_id", "rating_name")
-KEY("rating_id")
+("id", "rating_name")
+KEY("id")
 VALUES (1, 'G'),
 (2, 'PG'),
 (3, 'PG-13'),

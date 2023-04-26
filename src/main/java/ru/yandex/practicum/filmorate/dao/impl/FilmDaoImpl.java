@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.*;
+import java.util.List;
 
 @Component
 public class FilmDaoImpl implements FilmDao {
@@ -23,9 +24,9 @@ public class FilmDaoImpl implements FilmDao {
     }
 
     @Override
-    public Optional<List<Film>> findAllFilms() {
+    public Optional<List<Film>> findAllFilms(String count) {
         List<Film> films = new ArrayList<>();
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet("SELECT \"id\" FROM \"users\" LIMIT 100");
+        SqlRowSet filmRows = jdbcTemplate.queryForRowSet("SELECT \"id\" FROM \"users\" LIMIT ?", count);
         while (filmRows.next()) {
             Optional<Film> filmOptional = findFilmById(filmRows.getInt("id"));
             if (filmOptional.isPresent()) {
@@ -40,9 +41,9 @@ public class FilmDaoImpl implements FilmDao {
     public Optional<Film> findFilmById(int id) {
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet(
                 "SELECT *" +
-                        " FROM \"films\" " +
-                "JOIN \"rating\" ON \"rating\" = \"rating_id\" " +
-                "WHERE \"id\" = ?", id);
+                        " FROM \"films\" f " +
+                "JOIN \"rating\" r ON \"rating_id\" = r.\"id\" " +
+                "WHERE f.\"id\" = ?", id);
         if (filmRows.next()) {
             log.info("Найден фильм: {}", filmRows.getInt("id"));
             Film film = new Film(
@@ -51,7 +52,7 @@ public class FilmDaoImpl implements FilmDao {
                     filmRows.getString("description"),
                     filmRows.getDate("releaseDate").toLocalDate(),
                     filmRows.getInt("duration"),
-                    findMpaById(filmRows.getInt("rating")).get(),
+                    findMpaById(filmRows.getInt("rating_id")).get(),
                     findAllGenres(id).get(),
                     findFilmLikeCount(id).get()
             );
@@ -92,7 +93,7 @@ public class FilmDaoImpl implements FilmDao {
     @Override
     public Optional<Film> createFilm(Film film) {
         String sqlQuery = "insert into \"films\" (\"id\", \"name\"," +
-                " \"description\", \"releaseDate\", \"duration\", \"rating\") " +
+                " \"description\", \"releaseDate\", \"duration\", \"rating_id\") " +
                 "values (?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(sqlQuery,
@@ -119,7 +120,7 @@ public class FilmDaoImpl implements FilmDao {
     public Optional<Film> updateFilm(Film film) {
         jdbcTemplate.update("DELETE FROM \"genre_film\" WHERE \"film_id\" = ?", film.getId());
         String sqlQuery = "update \"films\" set " +
-                "\"name\" = ?, \"description\" = ?, \"releaseDate\" = ?, \"duration\" = ?, \"rating\" = ? " +
+                "\"name\" = ?, \"description\" = ?, \"releaseDate\" = ?, \"duration\" = ?, \"rating_id\" = ? " +
                 "where \"id\" = ?";
 
         jdbcTemplate.update(sqlQuery,
@@ -178,7 +179,7 @@ public class FilmDaoImpl implements FilmDao {
     @Override
     public Optional<Mpa> findMpaById(int id) {
         SqlRowSet mpaRow = jdbcTemplate.queryForRowSet(
-                "SELECT * FROM \"rating\" WHERE \"rating_id\" = ?", id
+                "SELECT * FROM \"rating\" WHERE \"id\" = ?", id
         );
 
         if (mpaRow.next()) {
@@ -190,11 +191,11 @@ public class FilmDaoImpl implements FilmDao {
 
     @Override
     public Optional<List<Mpa>> findAllMpa() {
-        SqlRowSet mpaRow = jdbcTemplate.queryForRowSet("SELECT * FROM \"rating\" ORDER BY \"rating_id\"");
+        SqlRowSet mpaRow = jdbcTemplate.queryForRowSet("SELECT * FROM \"rating\" ORDER BY \"id\"");
         List<Mpa> mpaSet = new ArrayList<>();
 
         while (mpaRow.next()) {
-            mpaSet.add(new Mpa(mpaRow.getInt("rating_id"), mpaRow.getString("rating_name")));
+            mpaSet.add(new Mpa(mpaRow.getInt("id"), mpaRow.getString("rating_name")));
         }
 
         return Optional.of(mpaSet);

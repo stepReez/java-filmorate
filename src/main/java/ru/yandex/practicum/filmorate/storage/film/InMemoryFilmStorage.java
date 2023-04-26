@@ -27,7 +27,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     private final LocalDate minReleaseDate = LocalDate.of(1895, 12, 28);
 
 
-    public List<Film> getFilms() {
+    public List<Film> getFilms(String count) {
         return films;
     }
 
@@ -79,7 +79,7 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     public List<Film> getTop(String count) {
         Comparator<Film> comparator = Comparator.comparingInt(Film::getLikes);
-        List<Film> list = getFilms()
+        List<Film> list = getFilms(count)
                 .stream()
                 .sorted(comparator.reversed())
                 .limit(Integer.parseInt(count))

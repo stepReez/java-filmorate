@@ -21,5 +21,5 @@ public interface UserDao {
 
     void deleteFriend(int userId, int friendId);
 
-    Optional<List<User>> findAllUsers();
+    Optional<List<User>> findAllUsers(String count);
 }

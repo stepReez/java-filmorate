@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FilmDao {
-    Optional<List<Film>> findAllFilms();
+    Optional<List<Film>> findAllFilms(String count);
 
     Optional<Film> findFilmById(int id);
 

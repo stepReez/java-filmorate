@@ -122,9 +122,9 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<List<User>> findAllUsers() {
+    public Optional<List<User>> findAllUsers(String count) {
         List<User> users = new ArrayList<>();
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM \"users\" LIMIT 100");
+        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM \"users\" LIMIT ?", count);
 
         while (userRows.next()) {
             User user = new User(
