@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -16,18 +17,17 @@ import java.util.Set;
 @Service
 public class UserService {
     private final Logger log = LoggerFactory.getLogger(FilmController.class);
+
     UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
     public void addFriend(int firstId, int secondId) {
         if (firstId > 0 && secondId > 0) {
-            userStorage.findUser(firstId).addFriend(secondId);
-            userStorage.findUser(secondId).addFriend(firstId);
-            log.info("Юзеры " + firstId + " и " + secondId + " теперь друзья");
+            userStorage.addFriend(firstId, secondId);
         } else {
             throw new NotFoundException("Id пользователя должно быть положительным");
         }
@@ -35,9 +35,7 @@ public class UserService {
 
     public void removeFriend(int firstUser, int secondUser) {
         if (firstUser > 0 && secondUser > 0) {
-            userStorage.findUser(firstUser).removeFriend(secondUser);
-            userStorage.findUser(secondUser).removeFriend(firstUser);
-            log.info("Юзеры " + firstUser + " и " + secondUser + " больше не друзья");
+            userStorage.deleteFriend(firstUser, secondUser);
         } else {
             throw new NotFoundException("Id пользователя должно быть положительным");
         }
